@@ -115,4 +115,4 @@ Please open issues or pull requests against this repository. Follow existing cod
 - The port used by the application may vary depending on how the ASP.NET Core host is configured or overridden by environment variables.
 - Resetting the database is intended for development/testing only; do not use it in production.
 
-If you want any additional sections (deployment, CI, example requests/responses, or environment variables), tell me what you'd like included and I will update the README.
+
