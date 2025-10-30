@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: hotelbooking-sqlserver
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=HotelBooking@123
+      - MSSQL_PID=Developer
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver-data:/var/opt/mssql
+    networks:
+      - hotelbooking-network
+
+  api:
+    build:
+      context: .
+      dockerfile: HotelBooking.API/Dockerfile
+    container_name: hotelbooking-api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=8080
+      - ASPNETCORE_HTTPS_PORTS=8081
+      - ConnectionStrings__DefaultConnection=Server=sqlserver,1433;Database=HotelBookings_DB;User Id=sa;Password=HotelBooking@123;TrustServerCertificate=True;MultipleActiveResultSets=true
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    depends_on:
+      - sqlserver
+    networks:
+      - hotelbooking-network
+
+volumes:
+  sqlserver-data:
+
+networks:
+  hotelbooking-network:
+    driver: bridge
