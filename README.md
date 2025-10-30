@@ -1,125 +1,118 @@
-******************************************************************🚀 Hotel Booking API**************************************************************************
+# Hotel Booking API
 
+Enterprise-grade Hotel Booking API implemented with Clean Architecture principles.
 
-This document provides essential instructions for setting up, configuring, and running the Hotel Booking API, an enterprise-grade solution built on Clean Architecture principles.
+## Technology stack & architecture
 
-******************************************************⚙️ 1. Technology Stack & Architecture**********************************************************************
-This API adheres strictly to the Clean Architecture pattern, ensuring strong separation of concerns.
+- Framework: ASP.NET Core 8+
+- Language: C#
+- Persistence: Entity Framework Core with SQL Server LocalDB
+- Patterns: CQRS via MediatR
+- Validation: FluentValidation (enforced via MediatR pipeline)
+- Error handling: Fluent Results for business errors and RFC 7807 Problem Details for standardized API responses
+- Observability: Correlation ID pattern for tracing requests
 
-**Framework**: ASP.NET Core 8+
-**Language**: C#
-**Persistence**: Entity Framework (EF) Core with SQL Server LocalDB
-**Patterns**: Command Query Responsibility Segregation (CQRS) via MediatR
-**Validation**: Fluent Validation (enforced via MediatR Pipeline)
-**Error Handling**: Fluent Results for business logic errors and RFC 7807 Problem Details for standardized API responses
-**Observability**: Correlation ID pattern for tracing requests across the system
+Core layers:
+- Domain
+- Application
+- Infrastructure
+- Presentation
 
-**Core layers:**
+## Prerequisites
 
-Domain
-Application
-Infrastructure
-Presentation
+- .NET 8 SDK (or later)
+- SQL Server LocalDB (usually installed with Visual Studio)
 
-**********************************************************🛠️ 2. Setup and Run************************************************************************************
-**Prerequisites****
+## Quick start
 
-.NET 8 SDK (or later)
-SQL Server LocalDB (usually installed with Visual Studio)
+1. Clone the repository
 
-  **Steps**
+   git clone https://github.com/siminialayi/HotelBookingSln.git
+   cd HotelBookingSln
 
-****1. Clone the Repository**
+2. Restore dependencies
 
-git clone https://github.com/siminalayi/HotelBookingSln.git
-cd HotelBookingSln
+   dotnet restore
 
-**2. Restore Dependencies**
+3. Configure the connection string
 
-dotnet restore
+   Update appsettings.json in HotelBookings.Presentation (or the environment-specific settings you use):
 
-**3. Configure Connection String**
-Update appsettings.json in HotelBookings.Presentation:
+   "ConnectionStrings": {
+     "DefaultConnection": "Server=(localdb)\\mssqllocaldb;Database=HotelBookings_DB;Trusted_Connection=True;MultipleActiveResultSets=true"
+   }
 
-"ConnectionStrings": {
-  "DefaultConnection": "Server=(localdb)\\mssqllocaldb;Database=HotelBookings_DB;Trusted_Connection=True;MultipleActiveResultSets=true"
-}
+4. Run the application
 
-**4. Run the Application**
+   dotnet run --project HotelBookings.Presentation
 
-dotnet run --project HotelBookings.Presentation
-``
-**5. Access Swagger**
-Navigate to:
-https://localhost:8081/swagger/index.html (Port may vary)
+   Optionally, to bind to a specific URL/port:
 
+   dotnet run --project HotelBookings.Presentation --urls "https://localhost:8081"
 
-**********************************************************💾 3. Database Initialization (Seeding & Resetting)****************************************************
-On first run, Program.cs automatically handles database initialization:
+5. Open Swagger
 
-**Migration**
+   Navigate to https://localhost:8081/swagger/index.html (port may vary if not set explicitly)
 
-await context.Database.MigrateAsync();
+## Database initialization (migrations, seeding & reset)
 
-**Seeding**
+On first run, Program.cs applies migrations and seeds data automatically:
 
-await DatabaseInitializer.SeedAsync(context);
+- Migrations: await context.Database.MigrateAsync();
+- Seeding: await DatabaseInitializer.SeedAsync(context);
 
-**Seeded data includes**:
+Seeded data includes:
+- One hotel: Grand Hyatt Downtown
+- Six rooms: 2 Single, 2 Double, 2 Deluxe
 
-One hotel: Grand Hyatt Downtown
-Six rooms: 2 Single, 2 Double, 2 Deluxe
-
-**To reset the database for clean testing, uncomment this line in Program.cs before SeedAsync (for dev/test only):**
+To reset the database (development/testing only), uncomment the ResetDatabaseAsync call in Program.cs before the SeedAsync call:
 
 // await DatabaseInitializer.ResetDatabaseAsync(context);
-``
-****************************************************🔒 4. Observability and Error Handling************************************************************************
-**Correlation ID**
 
-A Correlation ID (X-Correlation-ID) is automatically generated or read from the request header by CorrelationIdMiddleware.
-This ID is echoed in the response header and added to the logging context for end-to-end tracing.
+Be careful: resetting the database will delete and recreate the schema and seeded data.
 
-**Global Exception Handling**
+## Observability and error handling
 
-Unexpected exceptions are caught by IExceptionHandler.
-Errors are converted into standardized 500 Internal Server Error responses compliant with RFC 7807, including traceId and correlationId.
+- Correlation ID: CorrelationIdMiddleware reads or generates an X-Correlation-ID for each request. The correlation ID is returned in response headers and included in logs for end-to-end tracing.
+- Global exception handling: Unexpected exceptions are handled centrally and converted into Problem Details (RFC 7807) responses that include traceId and correlationId.
 
+## Testing the API (recommended manual tests via Swagger)
 
-**********************************************************************🧪 5. Testing the API Endpoints**********************************************************
-Use Swagger UI to execute the following test plan against the seeded data:
-**5.1.** Find Hotel
+Use Swagger UI to exercise the API using the seeded data:
 
-Endpoint: GET /api/Hotels
-Action: Search for the seeded hotel using name=Grand Hyatt Downtown.
-Expected: 200 OK with hotel details (case-insensitive search).
+1. Find hotel
+   - GET /api/Hotels
+   - Query: name=Grand Hyatt Downtown
+   - Expected: 200 OK with hotel details (case-insensitive search)
 
-**5.2.** Find Available Rooms
+2. Find available rooms
+   - GET /api/Rooms/available
+   - Query:
+     - checkIn=2025-11-10
+     - checkOut=2025-11-12
+     - guests=1
+   - Expected: 200 OK with 6 available rooms
 
-Endpoint: GET /api/Rooms/available
-Action: Search for rooms with:
+3. Book a room
+   - POST /api/Bookings
+   - Provide a valid RoomId and dates
+   - Expected: 201 Created with a unique booking number
 
-checkIn=2025-11-10
-checkOut=2025-11-12
-guests=1
+4. Test business rules
+   - Capacity test: try NumberOfGuests=5 for a room with capacity 2 (expect 400 Bad Request)
+   - Double booking test: attempt to book the same room for overlapping dates (expect 400 Bad Request with Problem Details)
 
-Expected: 200 OK with 6 available rooms.
+5. Find booking details
+   - GET /api/Bookings/{bookingNumber}
+   - Expected: 200 OK with full booking details (RoomNumber, HotelName, etc.)
 
-**5.3.** Book a Room
+## Contributing
 
-Endpoint: POST /api/Bookings
-Action: Book a room using a valid RoomId and dates.
-Expected: 201 Created with a unique booking number.
+Please open issues or pull requests against this repository. Follow existing code patterns and include tests where applicable.
 
-**5.4.** Test Business Rules
+## Notes
 
-Capacity Test: Try NumberOfGuests=5 for a room with capacity 2.
-Double Booking Test: Use the same RoomId and dates as a previous booking.
-Expected: 400 Bad Request with structured Problem Details.
+- The port used by the application may vary depending on how the ASP.NET Core host is configured or overridden by environment variables.
+- Resetting the database is intended for development/testing only; do not use it in production.
 
-**5.5.** Find Booking Details
-
-Endpoint: GET /api/Bookings/{bookingNumber}
-Action: Retrieve booking details using the saved booking number.
-Expected: 200 OK with full booking details including RoomNumber and HotelName.
-
+If you want any additional sections (deployment, CI, example requests/responses, or environment variables), tell me what you'd like included and I will update the README.
