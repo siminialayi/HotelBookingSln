@@ -1,4 +1,6 @@
 ******************************************************************🚀 Hotel Booking API**************************************************************************
+
+
 This document provides essential instructions for setting up, configuring, and running the Hotel Booking API, an enterprise-grade solution built on Clean Architecture principles.
 
 ******************************************************⚙️ 1. Technology Stack & Architecture**********************************************************************
