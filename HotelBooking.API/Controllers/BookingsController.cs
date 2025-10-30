@@ -33,7 +33,7 @@ public class BookingsController(IMediator mediator) : ControllerBase
 
         if (result.IsFailed)
             {
-            // TEACHING MOMENT: Mapping FluentResult to ProblemDetails
+            // Mapping FluentResult to ProblemDetails
             return BadRequest(new ProblemDetails
                 {
                 Status = StatusCodes.Status400BadRequest,

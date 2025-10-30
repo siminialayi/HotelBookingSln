@@ -1,5 +1,4 @@
-﻿// /HotelBookings.Application/Common/Mappings/MapsterConfig.cs
-using HotelBooking.Application.Bookings.Queries.FindBookingDetails;
+﻿using HotelBooking.Application.Bookings.Queries.FindBookingDetails;
 using HotelBooking.Application.Hotels.Queries.FindHotel;
 using HotelBooking.Application.Rooms.Queries.FindAvailableRooms;
 using HotelBooking.Domain.Entities;

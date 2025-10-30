@@ -14,7 +14,7 @@ public class RoomRepository(HotelBookingDbContext dbContext) : RepositoryBase<Ro
         DateTime checkOutDate,
         int requiredCapacity)
         {
-        // 1. Find the IDs of rooms that are already booked (Overlapping logic from BookingRepository)
+        // Find the IDs of rooms that are already booked (Overlapping logic from BookingRepository)
         var bookedRoomIds = await DbContext.Bookings
             .Where(b =>
                 checkInDate < b.CheckOutDate &&
@@ -23,7 +23,7 @@ public class RoomRepository(HotelBookingDbContext dbContext) : RepositoryBase<Ro
             .Distinct()
             .ToListAsync();
 
-        // 2. Find all rooms that meet capacity requirement AND are not in the booked list.
+        // Find all rooms that meet capacity requirement AND are not in the booked list.
         var availableRooms = await DbSet.AsNoTracking()
             .Where(r =>
                 r.Capacity >= requiredCapacity &&

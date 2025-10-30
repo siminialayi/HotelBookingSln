@@ -1,5 +1,4 @@
-﻿// /HotelBookings.Application/Bookings/Queries/FindBookingDetails/FindBookingDetailsQueryHandler.cs (Corrected)
-using FluentResults;
+﻿using FluentResults;
 using HotelBooking.Application.Interfaces;
 using Mapster;
 using MediatR;
@@ -13,7 +12,7 @@ public class FindBookingDetailsQueryHandler(IUnitOfWork unitOfWork) : IRequestHa
 
     public async Task<Result<BookingDetailsDto>> Handle(FindBookingDetailsQuery request, CancellationToken cancellationToken)
         {
-        // 1. Async Call uses the NEW repository method.
+        // Async Call uses the NEW repository method.
         // The Application layer doesn't know how the data was fetched (EF Core Includes).
         var booking = await _unitOfWork.Bookings.GetDetailsByBookingNumberAsync(request.BookingNumber);
 

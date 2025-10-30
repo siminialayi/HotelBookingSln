@@ -1,12 +1,11 @@
-﻿// /HotelBookings.Application/Common/Behaviors/ValidationBehavior.cs
-using MediatR;
+﻿using MediatR;
 using FluentValidation;
 using FluentResults;
 using System.Reflection;
 
 namespace HotelBooking.Application.Common.Behaviors;
 
-// TEACHING MOMENT: This behavior intercepts all MediatR requests (Commands)
+//This behavior intercepts all MediatR requests (Commands)
 public class ValidationBehavior<TRequest, TResponse>(IEnumerable<IValidator<TRequest>> validators) : IPipelineBehavior<TRequest, TResponse>
     where TRequest : IRequest<TResponse>
     where TResponse : IResultBase, new()

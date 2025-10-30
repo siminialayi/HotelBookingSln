@@ -1,6 +1,4 @@
-﻿// /HotelBookings.Infrastructure/Persistence/DatabaseInitializer.cs (Updated)
-
-using HotelBooking.Domain.Entities;
+﻿using HotelBooking.Domain.Entities;
 using HotelBooking.Domain.Enumerations;
 using HotelBooking.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -12,7 +10,7 @@ namespace HotelBookings.Infrastructure.Persistence;
 /// </summary>
 public static class DatabaseInitializer
 {
-    // The existing SeedAsync method remains here...
+
     public static async Task SeedAsync(HotelBookingDbContext context)
     {
         if (await context.Hotels.AnyAsync())

@@ -1,5 +1,4 @@
-﻿// /HotelBookings.Domain/Enums/RoomType.cs
-namespace HotelBooking.Domain.Enumerations;
+﻿namespace HotelBooking.Domain.Enumerations;
 
 /// <summary>
 /// Defines the available room types and their default maximum occupancy.

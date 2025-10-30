@@ -1,5 +1,4 @@
-﻿// /HotelBookings.Presentation/Controllers/HotelsController.cs
-using HotelBooking.Application.Hotels.Queries.FindHotel;
+﻿using HotelBooking.Application.Hotels.Queries.FindHotel;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
